@@ -1,17 +1,18 @@
 "use client";
 import ProjectPage from "@/components/projectPage";
 import Image from "next/image";
-import Link from "next/link";
 import { useState, useEffect } from "react";
 import AuthenticatedPage from "@/components/AuthenticatedPage";
 import { useLogout, usePrivy } from "@privy-io/react-auth";
+import Checkout from "@/components/CheckoutPage";
 
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [counter, setCounter] = useState(2);
   const [isVisible, setIsVisible] = useState(true);
   const [isHeartClicked, setIsHeartClicked] = useState(false);
-  const [shoppingBag] = useState<Set<number>>(new Set([]));
+  const [currentDisplay, setCurrentDisplay] = useState("project");
+  const [shoppingBag, setshoppingBag] = useState<Set<number>>(new Set([]));
   const { ready, authenticated } = usePrivy();
   const { logout } = useLogout();
 
@@ -26,6 +27,51 @@ export default function Home() {
       return () => clearTimeout(timer);
     }
   }, [counter, isVisible]);
+
+  const renderSection = (section: string) => {
+    switch (section) {
+      case "project":
+        return (
+          <>
+            {isVisible ? (
+              <div
+                className={` fade-in flex flex-col flex-grow h-full ${
+                  isVisible ? "fade-in-enter-active" : "fade-in-enter"
+                }`}
+              >
+                <ProjectPage projectIndex={counter} />
+              </div>
+            ) : (
+              <div className="flex flex-col flex-grow h-full"></div>
+            )}
+          </>
+        );
+      case "checkout":
+        return (
+          <Checkout
+            project={Array.from(shoppingBag)}
+            displayChanger={setCurrentDisplay}
+            shoppingbagChanger={setshoppingBag}
+          />
+        );
+      default:
+        return (
+          <>
+            {isVisible ? (
+              <div
+                className={` fade-in flex flex-col flex-grow h-full ${
+                  isVisible ? "fade-in-enter-active" : "fade-in-enter"
+                }`}
+              >
+                <ProjectPage projectIndex={counter} />
+              </div>
+            ) : (
+              <div className="flex flex-col flex-grow h-full"></div>
+            )}
+          </>
+        );
+    }
+  };
 
   return (
     <AuthenticatedPage>
@@ -81,76 +127,72 @@ export default function Home() {
               )}
             </div>
           </div>
-          {isVisible ? (
-            <div
-              className={` fade-in flex flex-col flex-grow h-full ${
-                isVisible ? "fade-in-enter-active" : "fade-in-enter"
-              }`}
-            >
-              <ProjectPage projectIndex={counter} />
+
+          {renderSection(currentDisplay)}
+          {currentDisplay == "project" && (
+            <div className="flex justify-between p-1">
+              <Image src="/point.png" alt="point" width={40} height={40} />
+              <button
+                onClick={() => {
+                  handleCounterChange(counter - 1);
+                  setIsHeartClicked(false);
+                }}
+              >
+                <Image
+                  src="/left-arrow.png"
+                  alt="left-arrow"
+                  width={40}
+                  height={40}
+                />
+              </button>
+              <button
+                onClick={() => {
+                  if (!isHeartClicked) {
+                    shoppingBag.add(counter);
+                  } else {
+                    shoppingBag.delete(counter);
+                  }
+                  setIsHeartClicked(!isHeartClicked);
+                }}
+              >
+                <Image
+                  src={isHeartClicked ? "/heart.png" : "/heart-outline.png"}
+                  alt="heart"
+                  width={40}
+                  height={40}
+                />
+              </button>
+              <button
+                onClick={() => {
+                  handleCounterChange(counter + 1);
+                  setIsHeartClicked(false);
+                }}
+              >
+                <Image
+                  src="/right-arrow.png"
+                  alt="right-arrow"
+                  width={40}
+                  height={40}
+                />
+              </button>
+              <button
+                onClick={() => setCurrentDisplay("checkout")}
+                className="relative"
+              >
+                {shoppingBag.size > 0 && (
+                  <div className="absolute top-0 left-0 bg-[#AF3BC9] text-white rounded-full w-5 h-5 flex items-center justify-center">
+                    {shoppingBag.size}
+                  </div>
+                )}
+                <Image
+                  src="/shopping-bag.png"
+                  alt="shopping-bag"
+                  width={40}
+                  height={40}
+                />
+              </button>
             </div>
-          ) : (
-            <div className="flex flex-col flex-grow h-full"></div>
           )}
-          <div className="flex justify-between p-1">
-            <Image src="/point.png" alt="point" width={40} height={40} />
-            <button
-              onClick={() => {
-                handleCounterChange(counter - 1);
-                setIsHeartClicked(false);
-              }}
-            >
-              <Image
-                src="/left-arrow.png"
-                alt="left-arrow"
-                width={40}
-                height={40}
-              />
-            </button>
-            <button
-              onClick={() => {
-                if (!isHeartClicked) {
-                  shoppingBag.add(counter);
-                } else {
-                  shoppingBag.delete(counter);
-                }
-                setIsHeartClicked(!isHeartClicked);
-              }}
-            >
-              <Image
-                src={isHeartClicked ? "/heart.png" : "/heart-outline.png"}
-                alt="heart"
-                width={40}
-                height={40}
-              />
-            </button>
-            <button
-              onClick={() => {
-                handleCounterChange(counter + 1);
-                setIsHeartClicked(false);
-              }}
-            >
-              <Image
-                src="/right-arrow.png"
-                alt="right-arrow"
-                width={40}
-                height={40}
-              />
-            </button>
-            <Link href="/checkout" className="relative">
-              {shoppingBag.size > 0 && (
-                <div className="absolute top-0 left-0 bg-[#AF3BC9] text-white rounded-full w-5 h-5 flex items-center justify-center">
-                  {shoppingBag.size}
-                </div>
-              )}
-              <Image
-                src="/shopping-bag.png"
-                alt="shopping-bag"
-                width={40}
-                height={40}
-              />
-            </Link>
-          </div>
         </div>
       </div>
     </AuthenticatedPage>

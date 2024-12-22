@@ -9,14 +9,17 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@0xsquid/sdk": "^2.8.27",
+    "@0xsquid/squid-types": "^0.1.129",
     "@privy-io/react-auth": "1.94.0",
     "@privy-io/wagmi": "^0.2.13",
     "@tanstack/react-query": "^5.62.7",
+    "ethers": "5.7.2",
     "next": "latest",
+    "permissionless": "^0.2.23",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "wagmi": "^2.10.4",
-    "ethers": "5.7.2"
+    "wagmi": "^2.10.4"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

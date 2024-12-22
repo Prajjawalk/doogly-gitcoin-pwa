@@ -10,6 +10,9 @@ export const ProjectData = (index: number) => {
       logoImageUrl: `/viaPrize-logo.jpeg`,
       projectWebsite: "https://qf.viaprize.org/maearth",
       projectTwitter: "https://x.com/viaprize",
+      projectOwner: "0x264f9EF85C21DE49451c3636116668889Ca41aab",
+      profileId:
+        "0x0051576d30c539cbfb0de951c1631507e3d68cb4dadd129c6e5936d7467a3498",
     },
     2: {
       title: "Hypercerts Foundation",
@@ -21,6 +24,9 @@ export const ProjectData = (index: number) => {
       logoImageUrl: `/viaPrize-logo.jpeg`,
       projectWebsite: "https://www.hypercerts.org",
       projectTwitter: "https://x.com/hypercerts",
+      projectOwner: "0x264f9EF85C21DE49451c3636116668889Ca41aab",
+      profileId:
+        "0xa87df39f52e703cab5d5c8e27eebebefc2867f34ac9aeb28097095c8fe41a839",
     },
     3: {
       title: "Funding the Commons",
@@ -32,6 +38,9 @@ export const ProjectData = (index: number) => {
       logoImageUrl: `/viaPrize-logo.jpeg`,
       projectWebsite: "https://fundingthecommons.io/",
       projectTwitter: "https://x.com/fundingcommons",
+      projectOwner: "0x264f9EF85C21DE49451c3636116668889Ca41aab",
+      profileId:
+        "0x158ab8951774976a766c75367cc2995b796300ebb2212b4b8cf8ef9f2ffbd9a2",
     },
     4: {
       title: "VoiceDeck: A Marketplace for Impact Certificates",
@@ -43,6 +52,9 @@ export const ProjectData = (index: number) => {
       logoImageUrl: `/viaPrize-logo.jpeg`,
       projectWebsite: "https://app.voicedeck.org",
       projectTwitter: "https://x.com/VoiceDeckDAO",
+      projectOwner: "0x264f9EF85C21DE49451c3636116668889Ca41aab",
+      profileId:
+        "0xb30e9a03fe9391b289331bc8d4f3ad6aa31db301447025f92b8275bc88d447f9",
     },
   };
   return (
@@ -56,6 +68,9 @@ export const ProjectData = (index: number) => {
       logoImageUrl: `/viaPrize-logo.jpeg`,
       projectWebsite: "https://app.voicedeck.org",
       projectTwitter: "https://x.com/VoiceDeckDAO",
+      projectOwner: "0x264f9EF85C21DE49451c3636116668889Ca41aab",
+      profileId:
+        "0xb30e9a03fe9391b289331bc8d4f3ad6aa31db301447025f92b8275bc88d447f9",
     }
   );
 };
