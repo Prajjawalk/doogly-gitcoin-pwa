@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import AuthenticatedPage from "@/components/AuthenticatedPage";
 import { useLogout, usePrivy } from "@privy-io/react-auth";
 import Checkout from "@/components/CheckoutPage";
+import Profile from "@/components/ProfilePage";
 
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -54,6 +55,8 @@ export default function Home() {
             shoppingbagChanger={setshoppingBag}
           />
         );
+      case "profile":
+        return <Profile displayChanger={setCurrentDisplay} />;
       default:
         return (
           <>
@@ -99,11 +102,11 @@ export default function Home() {
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
                   <button
                     className="block px-4 py-2 text-sm text-[#AF3BC9] hover:text-white hover:bg-[#AF3BC9] w-full text-left"
-                    onClick={() => setIsMenuOpen(false)}
+                    onClick={() => setCurrentDisplay("profile")}
                   >
                     My Profile
                   </button>
-                  <button
+                  {/* <button
                     className="block px-4 py-2 text-sm text-[#AF3BC9] hover:text-white hover:bg-[#AF3BC9] w-full text-left"
                     onClick={() => setIsMenuOpen(false)}
                   >
@@ -114,7 +117,7 @@ export default function Home() {
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Settings
-                  </button>
+                  </button> */}
                   {ready && authenticated && (
                     <button
                       className="block px-4 py-2 text-sm text-[#AF3BC9] hover:text-white hover:bg-[#AF3BC9] w-full text-left"
@@ -131,7 +134,13 @@ export default function Home() {
           {renderSection(currentDisplay)}
           {currentDisplay == "project" && (
             <div className="flex justify-between p-1">
-              <Image src="/point.png" alt="point" width={40} height={40} />
+              <Image
+                src="/point.png"
+                alt="point"
+                width={40}
+                height={40}
+                className="opacity-50"
+              />
               <button
                 onClick={() => {
                   handleCounterChange(counter - 1);

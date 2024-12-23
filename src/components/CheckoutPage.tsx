@@ -1,6 +1,5 @@
 "use client";
 
-import { ProjectData } from "@/data/projectData";
 import Image from "next/image";
 import { useState, useEffect, SetStateAction, Dispatch } from "react";
 import { useSquidRouter } from "./SquidRouterProvider";
@@ -19,11 +18,10 @@ import {
   useAccount,
   useWriteContract,
   useSendTransaction,
-  useReadContract,
   useConfig,
 } from "wagmi";
 import { useWallets } from "@privy-io/react-auth";
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 import Modal from "./Modal"; // Import the Modal component
 import { URL } from "url";
 import { readContract } from "wagmi/actions";
@@ -205,7 +203,6 @@ export default function Checkout({
       chainType: ChainType.EVM,
     },
   ]);
-  const [inputValue, setInputValue] = useState(2);
   const [isRoundDropdownOpen, setIsRoundDropdownOpen] = useState<number | null>(
     null
   );

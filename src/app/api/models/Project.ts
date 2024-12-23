@@ -34,7 +34,7 @@ const ProjectSchema: Schema = new Schema(
 // Create the Campaign model
 const createProjectModel = (mongooseInstance: typeof mongoose) => {
   return (
-    mongooseInstance.models.Project ||
+    mongooseInstance.models.projects ||
     mongooseInstance.model("projects", ProjectSchema)
   );
 };
