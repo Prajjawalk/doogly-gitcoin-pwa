@@ -10,18 +10,17 @@
 body {
   max-width: 100vw;
   overflow-x: hidden;
+  height: 100%;
 }
 
 .container {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 100vh;
   max-width: 40rem;
 
   margin: auto;
   padding: 0.5rem;
-
-  min-height: calc(100vh - 3.5rem);
 }
 
 body {

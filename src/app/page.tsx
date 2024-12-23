@@ -80,7 +80,7 @@ export default function Home() {
     <AuthenticatedPage>
       <div className="container h-screen max-h-screen">
         <div className="flex flex-col flex-grow h-full">
-          <div className="flex justify-between x-auto mt-10">
+          <div className="flex justify-between x-auto mt-1">
             <div className="flex">
               <Image
                 src="/android-chrome-512x512.png"
