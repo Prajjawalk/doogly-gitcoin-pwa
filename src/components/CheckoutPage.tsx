@@ -449,6 +449,7 @@ export default function Checkout({
         },
       };
 
+      // @ts-ignore
       const { route } = await sdk.getRoute(params);
       const transactionRequest =
         route.transactionRequest as OnChainExecutionData;

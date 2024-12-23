@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Itim } from "next/font/google";
 import "./globals.css";
-import Head from "next/head";
 import Providers from "./providers";
 
 export const metadata: Metadata = {
@@ -21,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <Head>
+      {/* <Head>
         <title>Doogly App</title>
         <link rel="icon" href="/favicon.ico" />
         <link
@@ -43,7 +42,7 @@ export default function RootLayout({
         />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#ebedff" />
-      </Head>
+      </Head> */}
 
       <body className={itim.className}>
         {" "}

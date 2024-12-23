@@ -8,6 +8,10 @@
     "start": "next start",
     "lint": "next lint"
   },
+  "overrides": {
+    "zustand": "5.0.2",
+    "@headlessui/react": "^2.2.0"
+  },
   "dependencies": {
     "@0xsquid/sdk": "^2.8.27",
     "@0xsquid/squid-types": "^0.1.129",
