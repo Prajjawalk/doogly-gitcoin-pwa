@@ -137,12 +137,14 @@ export default function Home() {
                   handleCounterChange(counter - 1);
                   setIsHeartClicked(false);
                 }}
+                disabled={counter == 0}
               >
                 <Image
                   src="/left-arrow.png"
                   alt="left-arrow"
                   width={40}
                   height={40}
+                  className={counter === 0 ? "opacity-50" : ""}
                 />
               </button>
               <button
@@ -163,6 +165,7 @@ export default function Home() {
                 />
               </button>
               <button
+                disabled={counter == 12}
                 onClick={() => {
                   handleCounterChange(counter + 1);
                   setIsHeartClicked(false);
@@ -173,6 +176,7 @@ export default function Home() {
                   alt="right-arrow"
                   width={40}
                   height={40}
+                  className={counter === 12 ? "opacity-50" : ""}
                 />
               </button>
               <button

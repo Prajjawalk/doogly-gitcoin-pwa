@@ -38,7 +38,6 @@ interface ItemDetail {
   id: number;
   title: string;
   logoImageUrl: string;
-  projectOwner: string;
   projectId: string;
   currentRound: string;
   inputValue: number;
@@ -110,38 +109,6 @@ const erc20ContractABI = [
       },
     ],
     payable: false,
-    stateMutability: "view",
-    type: "function",
-  },
-];
-
-const alloRegistryABI = [
-  {
-    inputs: [{ internalType: "bytes32", name: "_profileId", type: "bytes32" }],
-    name: "getProfileById",
-    outputs: [
-      {
-        components: [
-          { internalType: "bytes32", name: "id", type: "bytes32" },
-          { internalType: "uint256", name: "nonce", type: "uint256" },
-          { internalType: "string", name: "name", type: "string" },
-          {
-            components: [
-              { internalType: "uint256", name: "protocol", type: "uint256" },
-              { internalType: "string", name: "pointer", type: "string" },
-            ],
-            internalType: "struct Metadata",
-            name: "metadata",
-            type: "tuple",
-          },
-          { internalType: "address", name: "owner", type: "address" },
-          { internalType: "address", name: "anchor", type: "address" },
-        ],
-        internalType: "struct IRegistry.Profile",
-        name: "",
-        type: "tuple",
-      },
-    ],
     stateMutability: "view",
     type: "function",
   },
@@ -312,20 +279,24 @@ export default function Checkout({
   }, [sdk.chains]);
 
   useEffect(() => {
-    const items: Array<ItemDetail> = project?.map((i: number) => {
-      const data = ProjectData(i);
-      return {
-        id: i,
-        title: data.title,
-        logoImageUrl: data.logoImageUrl,
-        projectOwner: data.projectOwner,
-        projectId: data.profileId,
-        currentRound: "Direct Donate",
-        inputValue: 2,
-      };
-    });
+    const projectDetails = async () => {
+      const resp = await fetch("/api");
+      const details = await resp.json();
+      const items: Array<ItemDetail> = project?.map((i: number) => {
+        const data = details[i];
+        return {
+          id: i,
+          title: data.title,
+          logoImageUrl: data.logoImageUrl,
+          projectId: data.profileId,
+          currentRound: "Direct Donate",
+          inputValue: 2,
+        };
+      });
 
-    setItemDetails(items);
+      setItemDetails(items);
+    };
+    projectDetails();
   }, [project]);
 
   // Function to approve the transactionRequest.target to spend fromAmount of fromToken
@@ -523,6 +494,7 @@ export default function Checkout({
             imageUrl: "/doogly-mascot.png",
             blockExplorerLink: `${account.chain?.blockExplorers?.default.url}/tx/${tx}`,
           });
+          setItemDetails([]);
         } else {
           // Transaction failed
           setButtonText("Failed");

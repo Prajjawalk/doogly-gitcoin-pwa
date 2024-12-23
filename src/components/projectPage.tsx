@@ -1,52 +1,80 @@
 "use client";
 
+import { ObjectId } from "mongoose";
 import Image from "next/image";
-import { useState } from "react";
-import { ProjectData } from "../data/projectData";
+import { useEffect, useState } from "react";
+// import { ProjectData } from "../data/projectData";
 
 interface ProjectPageProps {
   projectIndex: number;
 }
 
+interface Project {
+  id: ObjectId;
+  title: string;
+  shortDescription: string;
+  description: string;
+  bannerImageUrl: string;
+  logoImageUrl: string;
+  projectWebsite: string;
+  projectTwitter: string;
+  profileId: string;
+}
+
 export default function ProjectPage({ projectIndex }: ProjectPageProps) {
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
-  const project = ProjectData(projectIndex);
+  const [project, setProject] = useState<Project>();
+
+  useEffect(() => {
+    const getProjectDetails = async () => {
+      const resp = await fetch("/api");
+      const details = await resp.json();
+      setProject(details[projectIndex]);
+    };
+
+    getProjectDetails();
+  }, [projectIndex]);
 
   if (!project) {
-    return <div>Project not found</div>;
+    return (
+      <div className="flex flex-col flex-grow h-full">
+        <div className="mx-3 my-3 flex-grow rounded-md flex flex-col h-full bg-[#AF3BC9] items-center justify-center">
+          <div className="text-white text-md">Loading...</div>
+        </div>
+      </div>
+    );
   }
 
   const shareOverlay = (
     <div className="absolute right-0 mt-2 w-10 bg-white rounded-md shadow-lg py-1 z-10">
-      <Image
-        src="/twitter.png"
-        alt="twitter"
-        width={40}
-        height={40}
-        className="p-2"
-      />
-      <Image
-        src="/website.png"
-        alt="website"
-        width={40}
-        height={40}
-        className="p-2"
-      />
-      <Image
-        src="/gitcoin-logo.png"
-        alt="gitcoin-logo"
-        width={40}
-        height={40}
-        className="p-2"
-      />
-      <Image
-        src="/share.png"
-        alt="share"
-        width={40}
-        height={40}
-        className="p-2"
-      />
+      <a href={project.projectTwitter}>
+        <Image
+          src="/twitter.png"
+          alt="twitter"
+          width={40}
+          height={40}
+          className="p-2"
+        />
+      </a>
+      <a href={project.projectWebsite}>
+        <Image
+          src="/website.png"
+          alt="website"
+          width={40}
+          height={40}
+          className="p-2"
+        />
+      </a>
+      <a href={`https://explorer.gitcoin.co/#/projects/${project.profileId}`}>
+        <Image
+          src="/gitcoin-logo.png"
+          alt="gitcoin-logo"
+          width={40}
+          height={40}
+          className="p-2"
+        />
+      </a>
     </div>
   );
 
@@ -64,7 +92,7 @@ export default function ProjectPage({ projectIndex }: ProjectPageProps) {
                 className="rounded-full bg-white"
               />
             </div>
-            <div className="text-2xl text-[#AF3BC9]">{project.title}</div>
+            <div className="text-xl text-[#AF3BC9]">{project.title}</div>
             <div className="relative">
               <button onClick={() => setIsShareOpen(!isShareOpen)}>
                 <Image
@@ -111,7 +139,7 @@ export default function ProjectPage({ projectIndex }: ProjectPageProps) {
                 className="rounded-full bg-white"
               />
             </div>
-            <div className="text-2xl text-[#AF3BC9]">{project.title}</div>
+            <div className="text-xl text-[#AF3BC9]">{project.title}</div>
             <div className="relative">
               <button onClick={() => setIsShareOpen(!isShareOpen)}>
                 <Image
