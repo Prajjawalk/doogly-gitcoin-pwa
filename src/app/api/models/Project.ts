@@ -1,6 +1,6 @@
 import mongoose, { Document, ObjectId, Schema } from "mongoose";
 
-// Define the interface for the Campaign document
+// Define the interface for the Project document
 export interface IProject extends Document {
   id: ObjectId;
   title: string;

@@ -21,9 +21,11 @@
     "ethers": "5.7.2",
     "mongoose": "^8.9.2",
     "next": "latest",
+    "openai": "^4.77.0",
     "permissionless": "^0.2.23",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-markdown": "^9.0.1",
     "wagmi": "^2.10.4"
   },
   "devDependencies": {

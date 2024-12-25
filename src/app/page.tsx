@@ -10,23 +10,91 @@ import Profile from "@/components/ProfilePage";
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [counter, setCounter] = useState(2);
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
   const [isHeartClicked, setIsHeartClicked] = useState(false);
   const [currentDisplay, setCurrentDisplay] = useState("project");
   const [shoppingBag, setshoppingBag] = useState<Set<number>>(new Set([]));
   const { ready, authenticated } = usePrivy();
   const { logout } = useLogout();
+  const [projects, setProjects] = useState();
 
   const handleCounterChange = (newCounter: number) => {
     setIsVisible(false);
     setCounter(newCounter);
   };
 
+  const getProjects = async () => {
+    const dbdata = await fetch("/api/projects");
+    const whitelistedProjects = await dbdata.json();
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_ALLO_GRAPHQL_ENDPOINT as unknown as URL,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          query: `
+          query MyQuery {
+            projects(
+              condition: {chainId: 42161}
+              filter: {and:{id: {in: ${JSON.stringify(
+                whitelistedProjects.projectids
+              )}}}}
+            ) {
+              metadata
+              id
+              nonce
+              name
+              roles(condition: {role: OWNER}) {
+                address
+              }
+            }
+          }
+        `,
+        }),
+      }
+    );
+
+    const data = await response.json();
+    return data.data.projects;
+  };
+
+  useEffect(() => {
+    const getprojects = async () => {
+      const projects = await getProjects();
+      await Promise.all(
+        projects.map(async (p: any) => {
+          const projectShortDescription = await fetch(`/api/shortdescription`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              profileId: p.id,
+              description: p.metadata.description,
+            }),
+          });
+          p["metadata"]["shortDescription"] = (
+            await projectShortDescription.json()
+          )?.["shortDescription"];
+        })
+      );
+      setProjects(projects);
+    };
+
+    if (!projects) {
+      getprojects();
+    }
+  }, [projects]);
+
   useEffect(() => {
     if (!isVisible) {
       const timer = setTimeout(() => setIsVisible(true), 300);
       return () => clearTimeout(timer);
     }
+
+    setIsVisible(true);
   }, [counter, isVisible]);
 
   const renderSection = (section: string) => {
@@ -40,7 +108,7 @@ export default function Home() {
                   isVisible ? "fade-in-enter-active" : "fade-in-enter"
                 }`}
               >
-                <ProjectPage projectIndex={counter} />
+                <ProjectPage project={projects?.[counter]} />
               </div>
             ) : (
               <div className="flex flex-col flex-grow h-full"></div>
@@ -50,6 +118,7 @@ export default function Home() {
       case "checkout":
         return (
           <Checkout
+            projects={projects}
             project={Array.from(shoppingBag)}
             displayChanger={setCurrentDisplay}
             shoppingbagChanger={setshoppingBag}
@@ -66,7 +135,7 @@ export default function Home() {
                   isVisible ? "fade-in-enter-active" : "fade-in-enter"
                 }`}
               >
-                <ProjectPage projectIndex={counter} />
+                <ProjectPage project={projects?.[counter]} />
               </div>
             ) : (
               <div className="flex flex-col flex-grow h-full"></div>
@@ -174,7 +243,9 @@ export default function Home() {
                 />
               </button>
               <button
-                disabled={counter == 12}
+                disabled={
+                  projects && counter === (projects?.length as number) - 1
+                }
                 onClick={() => {
                   handleCounterChange(counter + 1);
                   setIsHeartClicked(false);
@@ -185,7 +256,11 @@ export default function Home() {
                   alt="right-arrow"
                   width={40}
                   height={40}
-                  className={counter === 12 ? "opacity-50" : ""}
+                  className={
+                    counter === (projects?.length as number) - 1
+                      ? "opacity-50"
+                      : ""
+                  }
                 />
               </button>
               <button

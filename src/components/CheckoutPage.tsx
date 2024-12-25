@@ -27,9 +27,25 @@ import { URL } from "url";
 import { readContract } from "wagmi/actions";
 
 interface CheckoutProps {
+  projects: Project[] | undefined;
   project: number[];
   displayChanger: Dispatch<SetStateAction<string>>;
   shoppingbagChanger: Dispatch<SetStateAction<Set<number>>>;
+}
+
+interface Project {
+  metadata: {
+    title: string;
+    shortDescription: string;
+    description: string;
+    bannerImg: string;
+    logoImg: string;
+    website: string;
+    projectTwitter: string;
+  };
+  nonce: string;
+  roles: Array<{ address: string }>;
+  id: string;
 }
 
 interface ItemDetail {
@@ -39,6 +55,8 @@ interface ItemDetail {
   projectId: string;
   currentRound: string;
   inputValue: number;
+  nonce: string;
+  projectOwner: string;
 }
 
 const usdcArbitrumAddress = "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8"; // USDC on Arbitrum
@@ -137,6 +155,7 @@ const alloABI = [
 
 export default function Checkout({
   project,
+  projects,
   displayChanger,
   shoppingbagChanger,
 }: CheckoutProps) {
@@ -277,24 +296,25 @@ export default function Checkout({
 
   useEffect(() => {
     const projectDetails = async () => {
-      const resp = await fetch("/api");
-      const details = await resp.json();
-      const items: Array<ItemDetail> = project?.map((i: number) => {
-        const data = details[i];
-        return {
-          id: i,
-          title: data.title,
-          logoImageUrl: data.logoImageUrl,
-          projectId: data.profileId,
-          currentRound: "Direct Donate",
-          inputValue: 2,
-        };
-      });
-
-      setItemDetails(items);
+      if (projects?.length && projects.length > 0) {
+        const items: Array<ItemDetail> = project.map((i: number) => {
+          const data = projects?.[i];
+          return {
+            id: i,
+            title: data?.metadata.title,
+            logoImageUrl: data?.metadata.logoImg,
+            projectId: data?.id,
+            currentRound: "Direct Donate",
+            inputValue: 2,
+            projectOwner: data.roles[0].address,
+            nonce: data.nonce,
+          };
+        });
+        setItemDetails(items);
+      }
     };
     projectDetails();
-  }, [project]);
+  }, [project, projects?.length]);
 
   // Function to approve the transactionRequest.target to spend fromAmount of fromToken
   const approveSpending = async (
@@ -331,44 +351,12 @@ export default function Checkout({
       // Change button text to "processing..."
       setButtonText("processing...");
 
-      // GraphQL query to fetch projects
-      const query = `
-        query MyQuery {
-          projects(condition: {chainId: 42161}) {
-            nonce
-            id
-            roles(condition: {role: OWNER}) {
-              address
-            }
-            chainId
-          }
-        }
-      `;
-
-      // Make the GraphQL request
-      const response = await fetch(
-        process.env.NEXT_PUBLIC_ALLO_GRAPHQL_ENDPOINT as unknown as URL,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ query }),
-        }
-      );
-
       let inputAmt = 0;
       itemDetails.map((i) => (inputAmt += i.inputValue));
 
       const amount = ethers.utils.parseUnits(
         inputAmt.toString(),
         currentToken?.decimals
-      );
-
-      const { data } = await response.json();
-      const filteredProjects = data.projects.filter(
-        (project: any) =>
-          itemDetails.some((idObj) => idObj.projectId === project.id) // Check if project.id matches any projectID in projectIds
       );
 
       let poolIds: BigInt[] = [];
@@ -380,14 +368,13 @@ export default function Checkout({
         ethers.constants.MaxUint256,
       ]);
 
-      filteredProjects.map((p: any) => {
+      itemDetails.map((p: ItemDetail) => {
         poolIds.push(BigInt(390));
-        const projectOwner = p.roles[0].address;
+        const projectOwner = p.projectOwner;
         const nonce = p.nonce;
         const tokenAddress = usdcArbitrumAddress;
-        const item = itemDetails.find((i) => i.projectId == p.id);
         const tokenAmount = ethers.utils.parseUnits(
-          ((item?.inputValue as number) * 0.95).toString(),
+          ((p?.inputValue as number) * 0.95).toString(),
           currentToken?.decimals
         );
 
@@ -513,7 +500,7 @@ export default function Checkout({
   };
 
   const projectList = itemDetails?.map((i: ItemDetail, idx) => (
-    <div className="flex w-full h-full mt-3" key={idx}>
+    <div className="flex w-full mt-3" key={idx}>
       <div className="w-1/12 flex items-center justify-center">
         <button
           onClick={() => handleRemoveProject(i.id)}
@@ -528,15 +515,28 @@ export default function Checkout({
           />
         </button>
       </div>
-      <div className="w-11/12 h-full border-solid border-2 border-r-0 border-[#AF3BC9] rounded-l-2xl p-1">
+      <div className="w-11/12 border-solid border-2 border-r-0 border-[#AF3BC9] rounded-l-2xl p-1">
         <div className="flex justify-between">
           <div>
             <Image
-              src={i.logoImageUrl}
+              src={`https://d16c97c2np8a2o.cloudfront.net/ipfs/${i.logoImageUrl}`}
               alt="logo"
               width={40}
               height={40}
               className="rounded-full bg-white"
+              onError={(e) => {
+                if (
+                  e.currentTarget.src ===
+                  `https://d16c97c2np8a2o.cloudfront.net/ipfs/${i.logoImageUrl}`
+                ) {
+                  e.currentTarget.src = `https://ipfs.io/ipfs/${i.logoImageUrl}`; // Second fallback image URL
+                } else if (
+                  e.currentTarget.src ===
+                  `https://ipfs.io/ipfs/${i.logoImageUrl}`
+                ) {
+                  e.currentTarget.src = "/default-logo.png"; // Third fallback image URL
+                }
+              }}
             />
           </div>
           <div className="text-md text-[#AF3BC9]">{i.title}</div>
