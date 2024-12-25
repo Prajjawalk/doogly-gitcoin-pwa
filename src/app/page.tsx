@@ -1,4 +1,5 @@
 "use client";
+
 import ProjectPage from "@/components/projectPage";
 import Image from "next/image";
 import { useState, useEffect } from "react";
@@ -244,6 +245,7 @@ export default function Home() {
               </button>
               <button
                 disabled={
+                  // @ts-ignore
                   projects && counter === (projects?.length as number) - 1
                 }
                 onClick={() => {
@@ -257,6 +259,7 @@ export default function Home() {
                   width={40}
                   height={40}
                   className={
+                    // @ts-ignore
                     counter === (projects?.length as number) - 1
                       ? "opacity-50"
                       : ""
