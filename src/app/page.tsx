@@ -11,7 +11,7 @@ import Profile from "@/components/ProfilePage";
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [counter, setCounter] = useState(2);
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
   const [isHeartClicked, setIsHeartClicked] = useState(false);
   const [currentDisplay, setCurrentDisplay] = useState("project");
   const [shoppingBag, setshoppingBag] = useState<Set<number>>(new Set([]));
@@ -176,6 +176,14 @@ export default function Home() {
                   >
                     My Profile
                   </button>
+                  <a
+                    className="block px-4 py-2 text-sm text-[#AF3BC9] hover:text-white hover:bg-[#AF3BC9] w-full text-left"
+                    href="https://forms.gle/jrWfCY9btdp8vDUQ7"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Feedback
+                  </a>
                   {/* <button
                     className="block px-4 py-2 text-sm text-[#AF3BC9] hover:text-white hover:bg-[#AF3BC9] w-full text-left"
                     onClick={() => setIsMenuOpen(false)}
